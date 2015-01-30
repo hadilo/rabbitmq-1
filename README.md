@@ -1,9 +1,9 @@
 ## Wetopi rabbitmq Dockerfile
 
 This repository contains **Dockerfile** based on official rabbitmq with a new startup script 
-to let us perform user, credentials and vhost setup during container start.
+to let us perform user credentials and vhost setup during container start.
 
-This setup outside image lets run rabbitmq with credentials based on our environment variables setup
+This setup script outside our image lets run rabbitmq with credentials based on our environment variables.
 
 ### Base Docker Image
 
@@ -42,7 +42,9 @@ https://registry.hub.docker.com/u/library/wetopi/rabbitmq/
 
 ### Run with fig:
 
-´´´yaml
+A fig.yml file with all the basic environment variables:
+
+```yaml
 rabbitmq:
     image: wetopi/rabbitmq
     environment:
@@ -63,4 +65,4 @@ rabbitmqdata:
     volumes:
         - /var/lib/rabbitmq
     command: echo rabbitmq data
-´´´
+```
