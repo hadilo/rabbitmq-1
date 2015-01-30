@@ -35,10 +35,11 @@ echo "=> Done!"
 echo ""
 
 
-echo "=> Setting RabbitMQ credentials for $USER in $VIRTUALHOST:"
+echo "=> Setting RabbitMQ credentials for $USER and admin in $VIRTUALHOST:"
 rabbitmqctl add_user $USER $PASS
 rabbitmqctl set_user_tags $USER policymaker
 rabbitmqctl set_permissions -p $VIRTUALHOST $USER ".*" ".*" ".*"
+rabbitmqctl set_permissions -p $VIRTUALHOST admin ".*" ".*" ".*"
 echo "=> Done!"
 echo ""
 
