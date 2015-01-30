@@ -1,13 +1,23 @@
 #!/bin/bash
 set -e
 
-if [ ! -f /.docker-setup-done ]; then
-	/docker-setup.sh
+if [ "$1" = 'rabbitmq-server' ];
+then
+
+    if [ ! -f /.docker-setup-done ];
+    then
+    	echo "Start detached to let us do setup:"
+    	rabbitmq-server -detached
+    	sleep 5
+	    /docker-setup.sh
+
+    	echo "Stop detached rabbitmq:"
+		rabbitmqctl stop
+    	sleep 5
+    fi
 fi
 
-
-if [ "$1" = 'rabbitmq-server' ]; then
-	chown -R rabbitmq /var/lib/rabbitmq
-fi
-
+echo "Start rabbitmq in foreground:"
 exec "$@"
+
+

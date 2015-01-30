@@ -1,27 +1,56 @@
 #!/bin/bash
 
+USER=${RABBITMQ_USER:-"admin"}
+PASS=${RABBITMQ_PASS:-"admin"}
+VIRTUALHOST=${RABBITMQ_VIRTUALHOST:-"/"}
+
+
 if [ -f /.docker-setup-done ]; then
 	echo "RabbitMQ docker setup already done!"
 	exit 0
 fi
 
-PASS=${RABBITMQ_PASS:-"admin"}
-USER=${RABBITMQ_USER:-"admin"}
-
-echo "=> Setting RabbitMQ credentials:"
-cat > /etc/rabbitmq/rabbitmq.config <<EOF
-[
-	{rabbit, [{default_user, <<"$USER">>},{default_pass, <<"$PASS">>},{tcp_listeners, [{"0.0.0.0", 5672}]}]}
-].
-EOF
-
+echo "=> chown to rabbitmq /var/lib/rabbitmq:"
+chown -R rabbitmq /var/lib/rabbitmq
 echo "=> Done!"
+echo ""
+
+
+echo "=> Deleting RabbitMQ guest user:"
+rabbitmqctl delete_user guest
+echo "=> Done!"
+echo ""
+
+echo "=> Setting RabbitMQ admin user:"
+rabbitmqctl add_user admin $PASS
+rabbitmqctl set_permissions admin ".*" ".*" ".*"
+rabbitmqctl set_user_tags admin administrator
+echo "=> Done!"
+echo ""
+
+
+echo "=> Setting RabbitMQ vhost: $VIRTUALHOST"
+rabbitmqctl add_vhost $VIRTUALHOST
+echo "=> Done!"
+echo ""
+
+
+echo "=> Setting RabbitMQ credentials for $USER in $VIRTUALHOST:"
+rabbitmqctl add_user $USER $PASS
+rabbitmqctl set_user_tags $USER policymaker
+rabbitmqctl set_permissions -p $VIRTUALHOST $USER ".*" ".*" ".*"
+echo "=> Done!"
+echo ""
+
+
+
 touch /.docker-setup-done
 
 echo "========================================================================"
 echo "You can now connect to this RabbitMQ server using, for example:"
 echo ""
-echo "    curl --user $USER:$PASS http://<host>:<port>"
+echo "    curl --user admin:yoursecret http://<host>:<port>"
+echo "    curl --user $USER:yoursecret http://<host>:<port>"
 echo ""
-echo "Please remember to change the above password as soon as possible!"
+echo "Remember: yoursecret shoud be set via env var RABBITMQ_PASS"
 echo "========================================================================"
