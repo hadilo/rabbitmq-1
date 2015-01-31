@@ -15,9 +15,11 @@ then
 		rabbitmqctl stop
     	sleep 5
     fi
+
+	echo "Start rabbitmq in foreground:"
+
 fi
 
-echo "Start rabbitmq in foreground:"
 exec "$@"
 
 
