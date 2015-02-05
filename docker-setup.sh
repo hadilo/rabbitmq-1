@@ -45,7 +45,7 @@ echo ""
 
 
 
-touch /.docker-setup-done
+touch /var/lib/rabbitmq/.docker-setup-done
 
 echo "========================================================================"
 echo "You can now connect to this RabbitMQ server using, for example:"

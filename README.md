@@ -19,6 +19,7 @@ This docker-setup.sh performs:
 *  Delete guest user
 *  Create admin user with password from environment var RABBITMQ_PASS
 *  Create RABBITMQ_USER setting same RABBITMQ_PASS for RABBITMQ_VIRTUALHOST
+*  Save a token file in homedir /var/lib/rabbitmq/.docker-setup-done to do not repeat the setup
 
 This last user is the one we will use in wetopi app.
 
@@ -38,7 +39,9 @@ https://registry.hub.docker.com/u/library/wetopi/rabbitmq/
 
 ### Run container:
 
-    docker run -d -e RABBITMQ_NODENAME=rabbitmq -e RABBITMQ_USER=myuser -e RABBITMQ_PASS=mysecret -e RABBITMQ_VIRTUALHOST=/wetopi --name rabbitmq wetopi/rabbitmq
+    docker run -d -h rabbitmq.wetopi -e RABBITMQ_NODENAME=rabbitmq -e RABBITMQ_USER=myuser -e RABBITMQ_PASS=mysecret -e RABBITMQ_VIRTUALHOST=/wetopi --name rabbitmq wetopi/rabbitmq
+
+NOTE: in case of restarting from an existing mnesia database (in our case we are using `rabbitmqdata` with a persisted volume), its important to use always tell docker to use same hostname, i.e  `-h rabbitmq.wetopi` 
 
 ### Run with fig:
 
@@ -47,6 +50,7 @@ A fig.yml file with all the basic environment variables:
 ```yaml
 rabbitmq:
     image: wetopi/rabbitmq
+    hostname: rabbitmq.wetopi
     environment:
         - RABBITMQ_NODENAME=rabbitmq
         - RABBITMQ_VIRTUALHOST=/wetopi
